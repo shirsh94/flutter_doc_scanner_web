@@ -46,7 +46,7 @@ class DocumentScannerPage extends StatefulWidget {
   });
 
   @override
-  _DocumentScannerPageState createState() => _DocumentScannerPageState();
+  State<DocumentScannerPage> createState() => _DocumentScannerPageState();
 }
 
 class _DocumentScannerPageState extends State<DocumentScannerPage> {
@@ -263,7 +263,7 @@ class _DocumentScannerPageState extends State<DocumentScannerPage> {
     return Container(
       width: 20,
       height: 20,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: Colors.red,
         shape: BoxShape.circle,
       ),

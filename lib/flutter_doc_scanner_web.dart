@@ -1,6 +1,4 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_doc_scanner_web/flutter_doc_scanner_web.dart';
 import 'flutter_doc_scanner_web_platform_interface.dart';
 import 'flutter_doc_scanner_web_web.dart';
 
