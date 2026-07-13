@@ -3,11 +3,11 @@
 // package as the core of your plugin.
 // ignore: avoid_web_libraries_in_flutter
 
+import 'dart:js_interop';
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:web/web.dart' as web;
 import 'flutter_doc_scanner_web_platform_interface.dart';
-import 'dart:html' as html;
 
 
 /// A web implementation of the FlutterDocScannerWebPlatform of the FlutterDocScannerWeb plugin.
@@ -35,7 +35,8 @@ class DocumentScannerPage extends StatefulWidget {
   final double width;
   final double height;
 
-  DocumentScannerPage({
+  const DocumentScannerPage({
+    super.key,
     required this.appBarTitle,
     required this.captureButtonText,
     required this.cropButtonText,
@@ -57,38 +58,40 @@ class _DocumentScannerPageState extends State<DocumentScannerPage> {
   double cropHeight = 200;
 
   void _captureImage() {
-    final html.FileUploadInputElement input = html.FileUploadInputElement();
+    final web.HTMLInputElement input = web.document.createElement('input') as web.HTMLInputElement;
+    input.type = 'file';
     input.accept = 'image/*';
     input.click();
 
-    input.onChange.listen((event) {
+    input.onchange = (web.Event event) {
       final files = input.files;
-      if (files == null || files.isEmpty) return;
+      if (files == null || files.length == 0) return;
 
-      final reader = html.FileReader();
-      reader.readAsDataUrl(files[0]);
+      final reader = web.FileReader();
+      reader.readAsDataURL(files.item(0)!);
 
-      reader.onLoadEnd.listen((event) {
+      reader.onloadend = (web.Event event) {
         setState(() {
-          _imageUrl = reader.result as String;
+          _imageUrl = (reader.result as JSString).toDart;
           _pdfUrl = null; // Reset PDF URL when a new image is picked
         });
-      });
-    });
+      }.toJS;
+    }.toJS;
   }
 
   void _cropImage() {
     if (_imageUrl == null) return;
 
-    final canvas = html.CanvasElement();
-    final img = html.ImageElement(src: _imageUrl!);
+    final canvas = web.document.createElement('canvas') as web.HTMLCanvasElement;
+    final img = web.document.createElement('img') as web.HTMLImageElement;
+    img.src = _imageUrl!;
 
-    img.onLoad.listen((event) {
+    img.onload = (web.Event event) {
       canvas.width = cropWidth.toInt();
       canvas.height = cropHeight.toInt();
 
-      final ctx = canvas.context2D;
-      ctx.drawImageScaledFromSource(
+      final ctx = canvas.getContext('2d') as web.CanvasRenderingContext2D;
+      ctx.drawImage(
         img,
         left,
         top,
@@ -100,26 +103,29 @@ class _DocumentScannerPageState extends State<DocumentScannerPage> {
         cropHeight,
       );
 
-      final croppedImageUrl = canvas.toDataUrl();
+      final croppedImageUrl = canvas.toDataURL();
       Navigator.of(context).pop(croppedImageUrl);
-    });
+    }.toJS;
   }
 
   void _convertToPDF() {
     if (_imageUrl == null) return;
 
-    final canvas = html.CanvasElement(width: 595, height: 842); // A4 size in points
-    final img = html.ImageElement(src: _imageUrl!);
+    final canvas = web.document.createElement('canvas') as web.HTMLCanvasElement;
+    canvas.width = 595;
+    canvas.height = 842;
+    final img = web.document.createElement('img') as web.HTMLImageElement;
+    img.src = _imageUrl!;
 
-    img.onLoad.listen((event) {
-      final ctx = canvas.context2D;
-      ctx.drawImageScaled(img, 0, 0, 595, 842); // Scale the image to fit A4
+    img.onload = (web.Event event) {
+      final ctx = canvas.getContext('2d') as web.CanvasRenderingContext2D;
+      ctx.drawImage(img, 0, 0, 595, 842);
 
-      final pdfBlob = html.Blob([canvas.toDataUrl()], 'application/pdf');
-      final pdfUrl = html.Url.createObjectUrl(pdfBlob);
+      final pdfBlob = web.Blob([canvas.toDataURL().toJS].toJS, web.BlobPropertyBag(type: 'application/pdf'));
+      final pdfUrl = web.URL.createObjectURL(pdfBlob);
       _pdfUrl = pdfUrl; // Set the generated PDF URL
       Navigator.of(context).pop(_pdfUrl); // Return the PDF URL
-    });
+    }.toJS;
   }
 
   @override
@@ -238,7 +244,7 @@ class _DocumentScannerPageState extends State<DocumentScannerPage> {
                       onPressed: _cropImage,
                       child: Text(widget.cropButtonText),
                     ),
-                    SizedBox(width: 10,),
+                    const SizedBox(width: 10,),
                     ElevatedButton(
                       onPressed: _convertToPDF,
                       child: Text(widget.cropPdfButtonText),

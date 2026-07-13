@@ -1,6 +1,6 @@
 # flutter_doc_scanner_web
 
-A Flutter plugin for document scanning on the Web using `dart:html`.
+A Flutter plugin for document scanning on the Web using `package:web`.
 
 ## Example
 
@@ -14,7 +14,7 @@ Add `flutter_doc_scanner_web` to your `pubspec.yaml`:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_doc_scanner_web: ^0.0.1
+  flutter_doc_scanner_web: ^0.1.0
 ```
 
 ## Usage
