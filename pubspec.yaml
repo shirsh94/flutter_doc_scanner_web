@@ -1,7 +1,9 @@
 name: flutter_doc_scanner_web
 description: "A Flutter plugin for document scanning on the Web using package:web."
 version: 0.1.0
-homepage:
+homepage: https://github.com/shirsh94/flutter_doc_scanner_web
+repository: https://github.com/shirsh94/flutter_doc_scanner_web
+issue_tracker: https://github.com/shirsh94/flutter_doc_scanner_web/issues
 
 environment:
   sdk: '>=2.18.0 <4.0.0'
