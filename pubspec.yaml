@@ -6,8 +6,8 @@ repository: https://github.com/shirsh94/flutter_doc_scanner_web
 issue_tracker: https://github.com/shirsh94/flutter_doc_scanner_web/issues
 
 environment:
-  sdk: '>=2.18.0 <4.0.0'
-  flutter: ">=1.17.0"
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=3.0.0"
 
 dependencies:
   flutter:
